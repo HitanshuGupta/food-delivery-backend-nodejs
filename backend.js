@@ -37,7 +37,7 @@ app.post("/signup", (req, res) => {
 
 		credentialList.push(user);
 		const jsondata = JSON.stringify(credentialList);
-		wrtieToFile(jsondata);
+		writeToFile(jsondata);
 		res.json({ message: "User created successfully" });
 	}
 	console.log(credentialList);
@@ -57,6 +57,22 @@ app.post("/login", (req, res) => {
 	res.json({ message: "Invalid email or password" });
 });
 
+app.post('/forgotPassword',(req,res)=>{
+	const { emailId, phoneNumber, newPassword } = req.body;
+
+	//email exist in credList, phoneNumber is same or not then we've to update the oldpass with new password
+	for(let i =0; i<credentialList.length; i++){
+		if(credentialList[i].emailId === emailId && credentialList[i].phoneNumber === phoneNumber){
+			credentialList[i].password = newPassword;
+			res.json({message: "password update successfully."})
+			const jsondata = JSON.stringify(credentialList);
+			writeToFile(jsondata);
+			return;
+		}
+	}
+	res.json({ message: "Invalid Email or Phone No."});
+});
+
 
 function readFromFile() {
 fs.readFile("cred.json", (err, data) => {
@@ -70,7 +86,7 @@ fs.readFile("cred.json", (err, data) => {
 }
 
 
-function wrtieToFile(jsondata) {
+function writeToFile(jsondata) {
 	fs.writeFile("cred.json", jsondata, (err) => {
 		if (err) {
 			console.log("error in writing the files", err);
