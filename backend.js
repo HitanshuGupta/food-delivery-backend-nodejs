@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require('fs');
+const fs = require("fs");
 const app = express();
 
 app.use(express.json());
@@ -9,8 +9,6 @@ app.use(cors());
 let credentialList = [];
 
 readFromFile();
-
-
 
 app.post("/signup", (req, res) => {
 	const { fullName, emailId, phoneNumber, password, add } = req.body;
@@ -57,34 +55,35 @@ app.post("/login", (req, res) => {
 	res.json({ message: "Invalid email or password" });
 });
 
-app.post('/forgotPassword',(req,res)=>{
+app.post("/forgotPassword", (req, res) => {
 	const { emailId, phoneNumber, newPassword } = req.body;
 
 	//email exist in credList, phoneNumber is same or not then we've to update the oldpass with new password
-	for(let i =0; i<credentialList.length; i++){
-		if(credentialList[i].emailId === emailId && credentialList[i].phoneNumber === phoneNumber){
+	for (let i = 0; i < credentialList.length; i++) {
+		if (
+			credentialList[i].emailId === emailId &&
+			credentialList[i].phoneNumber === phoneNumber
+		) {
 			credentialList[i].password = newPassword;
-			res.json({message: "password update successfully."})
+			res.json({ message: "password update successfully." });
 			const jsondata = JSON.stringify(credentialList);
 			writeToFile(jsondata);
 			return;
 		}
 	}
-	res.json({ message: "Invalid Email or Phone No."});
+	res.json({ message: "Invalid Email or Phone No." });
 });
-
 
 function readFromFile() {
-fs.readFile("cred.json", (err, data) => {
-	if (err) {
-		console.log("error in reading the files");
-	} else {
-		console.log(data.toString());
-		credentialList = JSON.parse(data.toString());
-	}
-});
+	fs.readFile("cred.json", (err, data) => {
+		if (err) {
+			console.log("error in reading the files");
+		} else {
+			console.log(data.toString());
+			credentialList = JSON.parse(data.toString());
+		}
+	});
 }
-
 
 function writeToFile(jsondata) {
 	fs.writeFile("cred.json", jsondata, (err) => {
